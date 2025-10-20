@@ -75,11 +75,6 @@ cp .env.example .env
 
 Éditer le fichier `.env` :
 ```env
-# Base de données
-# MONGODB_URI=mongodb://localhost:27017/warren_ai
-# ou pour Atlas :
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/warren_ai
-
 # Sécurité
 SECRET_KEY=votre-cle-secrete-unique
 
