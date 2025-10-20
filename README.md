@@ -319,42 +319,6 @@ warren-ai/
 - [ ] Application mobile
 - [ ] Analyse technique avancée
 
-## 🐛 Dépannage
-
-### Problèmes courants
-
-#### Erreur de connexion API BVMT
-```bash
-# Vérifier l'URL de l'API dans les variables d'environnement
-echo $BVMT_BASE_URL
-
-# Tester la connexion avec curl
-curl -X GET "$BVMT_BASE_URL/stocks/"
-```
-
-#### Modèles IA non trouvés
-```bash
-# Vider le cache et retélécharger
-rm -rf ./models_cache/
-python -c "from src.services.ai_service import AIService; AIService().initialize_models()"
-```
-
-#### Erreur de port déjà utilisé
-```bash
-# Trouver le processus
-lsof -i :5000
-
-# Arrêter le processus
-kill -9 <PID>
-```
-
-## 📞 Support
-
-- **Documentation** : [Wiki du projet](wiki-url)
-- **Issues** : [GitHub Issues](issues-url)
-- **Email** : support@Atlas_View.com
-- **Discord** : [Serveur communauté](discord-url)
-
 ## 📄 Licence
 
 Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
