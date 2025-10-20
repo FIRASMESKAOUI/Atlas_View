@@ -26,7 +26,7 @@ Carthago Market est une application web fullstack moderne qui permet d'analyser 
 
 ### Backend (Flask)
 - **Framework** : Flask avec architecture modulaire (blueprints)
-- **Base de données** : MongoDB avec collections optimisées
+- **Données** : Récupération directe via l'API BVMT
 - **API REST** : Endpoints documentés et sécurisés
 - **Services** : Couche d'abstraction pour BVMT et IA
 
@@ -44,7 +44,6 @@ Carthago Market est une application web fullstack moderne qui permet d'analyser 
 ## 📋 Prérequis
 
 - **Python** 3.8+ avec pip
-- **MongoDB** 4.4+ (local ou Atlas)
 - **Node.js** 14+ (optionnel, pour outils de développement)
 - **Git** pour le clonage du repository
 
@@ -53,7 +52,7 @@ Carthago Market est une application web fullstack moderne qui permet d'analyser 
 ### 1. Cloner le projet
 ```bash
 git clone <repository-url>
-cd Atlas-Capital
+cd Atlas_View
 ```
 
 ### 2. Créer l'environnement virtuel
@@ -69,29 +68,7 @@ venv\Scripts\activate     # Windows
 pip install -r requirements.txt
 ```
 
-### 4. Configuration de la base de données
-
-#### Option A : MongoDB Local
-```bash
-# Ubuntu/Debian
-sudo apt update
-sudo apt install mongodb-org
-sudo systemctl start mongod
-sudo systemctl enable mongod
-
-# macOS avec Homebrew
-brew tap mongodb/brew
-brew install mongodb-community
-brew services start mongodb/brew/mongodb-community
-```
-
-#### Option B : MongoDB Atlas
-1. Créer un compte sur [MongoDB Atlas](https://www.mongodb.com/atlas)
-2. Créer un cluster gratuit
-3. Obtenir la chaîne de connexion
-4. Mettre à jour le fichier `.env`
-
-### 5. Configuration des variables d'environnement
+### 4. Configuration des variables d'environnement
 ```bash
 cp .env.example .env
 ```
@@ -99,7 +76,7 @@ cp .env.example .env
 Éditer le fichier `.env` :
 ```env
 # Base de données
-MONGODB_URI=mongodb://localhost:27017/warren_ai
+# MONGODB_URI=mongodb://localhost:27017/warren_ai
 # ou pour Atlas :
 # MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/warren_ai
 
@@ -292,17 +269,10 @@ SECURITY_HEADERS = True
 
 ## 🚀 Déploiement
 
-### Docker (Recommandé)
-```dockerfile
-# Dockerfile fourni
-docker build -t Atlas-Capital .
-docker run -p 5000:5000 Atlas-Capital
-```
-
 ### Heroku
 ```bash
 # Installer Heroku CLI
-heroku create Atlas-Capital-app
+heroku create Atlas_View-app
 git push heroku main
 ```
 
@@ -320,7 +290,6 @@ sudo apt install nginx
 warren-ai/
 ├── src/
 │   ├── main.py              # Point d'entrée Flask
-│   ├── database/            # Connexion MongoDB
 │   ├── routes/              # Endpoints API
 │   ├── services/            # Logique métier
 │   └── static/              # Frontend (HTML/CSS/JS)
@@ -354,13 +323,13 @@ warren-ai/
 
 ### Problèmes courants
 
-#### Erreur de connexion MongoDB
+#### Erreur de connexion API BVMT
 ```bash
-# Vérifier le statut
-sudo systemctl status mongod
+# Vérifier l'URL de l'API dans les variables d'environnement
+echo $BVMT_BASE_URL
 
-# Redémarrer si nécessaire
-sudo systemctl restart mongod
+# Tester la connexion avec curl
+curl -X GET "$BVMT_BASE_URL/stocks/"
 ```
 
 #### Modèles IA non trouvés
@@ -394,7 +363,6 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 - **BVMT** pour l'accès aux données financières
 - **HuggingFace** pour les modèles IA pré-entraînés
-- **MongoDB** pour la base de données
 - **Flask** pour le framework web
 - **Chart.js** pour les visualisations
 
