@@ -1,6 +1,6 @@
-# Carthago Market - Plateforme d'Analyse Financière BVMT
+# Atlas_View - Plateforme d'Analyse Financière BVMT
 
-Carthago Market est une application web fullstack moderne qui permet d'analyser les données financières de la Bourse de Valeurs Mobilières de Tunis (BVMT) en utilisant l'intelligence artificielle.
+Atlas_View est une application web fullstack moderne qui permet d'analyser les données financières de la Bourse de Valeurs Mobilières de Tunis (BVMT) en utilisant l'intelligence artificielle.
 
 ## 🚀 Fonctionnalités
 
@@ -204,7 +204,7 @@ CACHE_TIMEOUT = 300  # 5 minutes
 ```python
 # Configuration des logs
 LOGGING_LEVEL = 'INFO'
-LOG_FILE = 'logs/Atlas-Capital.log'
+LOG_FILE = 'logs/Atlas_View.log'
 ```
 
 ## 🧪 Tests
@@ -235,10 +235,10 @@ python tests/test_database.py
 ### Logs de l'application
 ```bash
 # Voir les logs en temps réel
-tail -f logs/Atlas-Capital.log
+tail -f logs/Atlas_View.log
 
 # Logs par niveau
-grep "ERROR" logs/Atlas-Capital.log
+grep "ERROR" logs/Atlas_View.log
 ```
 
 ### Métriques de performance
@@ -352,7 +352,7 @@ kill -9 <PID>
 
 - **Documentation** : [Wiki du projet](wiki-url)
 - **Issues** : [GitHub Issues](issues-url)
-- **Email** : support@Atlas-Capital.com
+- **Email** : support@Atlas_View.com
 - **Discord** : [Serveur communauté](discord-url)
 
 ## 📄 Licence
@@ -368,4 +368,4 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 ---
 
-**Carthago Market** - Analyse financière intelligente pour la BVMT 🚀📊🤖
+**Atlas_View** - Analyse financière intelligente pour la BVMT 🚀📊🤖
