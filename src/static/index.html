@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas View - Analyse Financière BVMT</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/indices.css">
+
+    <link rel="stylesheet" href="css/graphiques.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.2.1/dist/chartjs-chart-financial.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <script src="https://cdn.jsdelivr.net/npm/scichart/index.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/5.3.5/apexcharts.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+    <!-- Plugin Financial pour Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+
+    <!-- Plugin Zoom pour Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+
+    <!-- Plugin DataLabels pour Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Dans le head -->
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <!-- Pour le téléchargement -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+
+    <style>
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: flex-start;
+        }
+        .logo img {
+            height: 80px;
+            width: auto;
+            margin-right: 10px;
+        }
+        .logo span {
+            font-size: 2.1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-left: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 100vw;
+            margin: 0;
+            padding: 0 32px;
+        }
+        .header {
+            width: 100vw;
+            box-sizing: border-box;
+        }
+        /* Centrage et adaptation du graphique en plein écran */
+        .stock-history-chart-container:fullscreen {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            width: 100vw !important;
+            height: 100vh !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            z-index: 9999;
+        }
+        .stock-history-chart-container:fullscreen canvas {
+            width: 90vw !important;
+            height: 80vh !important;
+            max-width: 100vw;
+            max-height: 100vh;
+            display: block;
+            margin: auto;
+            background: #fff;
+        }
+        .stock-history-chart-container:fullscreen #fullscreenChartBtn {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            z-index: 10000;
+        }
+        .stock-history-chart-container #fullscreenChartBtn i,
+        .stock-history-chart-container #downloadChartBtn i {
+            color: #888;
+        }
+        .stock-history-chart-container #fullscreenChartBtn:hover i,
+        .stock-history-chart-container #downloadChartBtn:hover i {
+            color: #333;
+        }
+
+        /* Style pour le dropdown d'analyse des cours identique au dropdown principal */
+        #dataChartsSymbol {
+            padding: 10px 14px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--gray-200);
+            background: white;
+            font-size: 1rem;
+            min-width: 200px;
+            max-width: 320px;
+            width: 100%;
+            color: var(--gray-700);
+            box-shadow: var(--shadow-sm);
+            transition: border-color 0.2s;
+        }
+
+        #dataChartsSymbol:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Style pour les boutons de la section dataCharts identique à la section stocks */
+        #fullscreenDataChartBtn i,
+        #downloadDataChartBtn i,
+        #lineChartBtn i,
+        #candleChartBtn i,
+        #resetZoomBtn i {
+            color: #888;
+        }
+
+        #fullscreenDataChartBtn:hover i,
+        #downloadDataChartBtn:hover i,
+        #lineChartBtn:hover i,
+        #candleChartBtn:hover i,
+        #resetZoomBtn:hover i {
+            color: #333;
+        }
+
+        /* Style pour le conteneur d'outils avec fond blanc et bordure grise */
+        .chart-controls {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* Style spécifique pour les sélecteurs côte à côte dans dataCharts */
+        #dataCharts .control-group {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            flex-direction: row !important;
+        }
+
+        #dataCharts .control-group select {
+            min-width: 120px !important;
+            display: inline-block !important;
+        }
+        /* Styles pour le bouton de dessin actif */
+        .chart-type-btn.active, .indicator-btn.active {
+            background: #e5e7eb !important;
+            border: 1px solid #d1d5db !important;
+        }
+
+        /* Dropdown amélioré */
+        .draw-line-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 180px;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 8px 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        /* Indicateur de mode dessin */
+        .drawing-mode {
+            cursor: crosshair !important;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <img src="images/atlas_view.png" alt="Atlas View Logo" style="height: 50px; width: auto; margin-right: 10px;">
+            </div>
+            <nav class="nav">
+                <a href="#dashboard" class="nav-link active">Tableau de Bord</a>
+                <a href="#stocks" class="nav-link">Actions</a>
+<!--                <a href="#graphiques" class="nav-link">Graphiques</a>-->
+                <a href="#marketwatch" class="nav-link">Market Watch</a>
+                <a href="#dataCharts" class="nav-link">Graphiques</a>
+            </nav>
+            <div class="header-actions">
+                <button class="btn btn-outline" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i>
+                    Actualiser
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="main">
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="section active">
+        <div class="container">
+            <div class="section-header">
+                <!-- Suppression du titre et du sous-titre du tableau de bord BVMT -->
+            </div>
+
+            <!-- Indices -->
+            <div id="indices-container"></div>
+
+            <!-- Market Summary Cards -->
+            <div class="market-summary">
+                <div class="summary-card">
+                    <div class="card-icon green">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="gainersCount">-</h3>
+                        <p>Hausses</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-icon red">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="losersCount">-</h3>
+                        <p>Baisses</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-icon blue">
+                        <i class="fas fa-minus"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="unchangedCount">-</h3>
+                        <p>Inchangées</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-icon purple">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="totalStocks">-</h3>
+                        <p>Total Actions</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Tables -->
+            <div class="market-tables">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3><i class="fas fa-arrow-up text-green"></i> Top Hausses</h3>
+                    </div>
+                    <div class="table-content">
+                        <table id="gainersTable">
+                            <thead>
+                            <tr>
+                                <th>Ticker</th>
+                                <th>Nom</th>
+                                <th>Prix</th>
+                                <th>Variation</th>
+                                <th>Volume</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3><i class="fas fa-arrow-down text-red"></i> Top Baisses</h3>
+                    </div>
+                    <div class="table-content">
+                        <table id="losersTable">
+                            <thead>
+                            <tr>
+                                <th>Ticker</th>
+                                <th>Nom</th>
+                                <th>Prix</th>
+                                <th>Variation</th>
+                                <th>Volume</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Most Active -->
+            <div class="table-container full-width">
+                <div class="table-header">
+                    <h3><i class="fas fa-fire text-orange"></i> Plus Actives</h3>
+                </div>
+                <div class="table-content">
+                    <table id="activeTable">
+                        <thead>
+                        <tr>
+                            <th>Ticker</th>
+                            <th>Nom</th>
+                            <th>Prix</th>
+                            <th>Variation</th>
+                            <th>Volume</th>
+                            <th>Cap. Marché</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stocks Section -->
+    <section id="stocks" class="section">
+        <div class="container">
+            <div class="section-header">
+                <!-- Suppression du titre et du sous-titre de la recherche d'actions -->
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <select id="stockDropdown" style="margin-right:8px; min-width:180px;">
+                        <option value="">Sélectionner une action...</option>
+                    </select>
+                    <input type="text" id="stockSearch" placeholder="Rechercher par ticker ou nom (ex: STB, BNA...)">
+                    <button class="btn btn-primary" id="searchBtn">Rechercher</button>
+                </div>
+            </div>
+
+            <!-- Stock Details Card -->
+            <div id="stockDetails" class="stock-details" style="display: none;">
+                <div class="stock-header">
+                    <div class="stock-info">
+                        <h2 id="stockName">-</h2>
+                        <p id="stockTicker">-</p>
+                    </div>
+                    <div class="stock-price">
+                        <span id="stockPrice">-</span>
+                        <span id="stockChange" class="change">-</span>
+                    </div>
+                </div>
+
+                <div class="stock-metrics">
+                    <div class="metric">
+                        <label>Plus Haut</label>
+                        <span id="stockHigh">-</span>
+                    </div>
+                    <div class="metric">
+                        <label>Plus Bas</label>
+                        <span id="stockLow">-</span>
+                    </div>
+                    <div class="metric">
+                        <label>Clôture</label>
+                        <span id="stockClose">-</span>
+                    </div>
+                    <div class="metric">
+                        <label>Volume</label>
+                        <span id="stockVolume">-</span>
+                    </div>
+                    <div class="metric">
+                        <label>Cap. Marché</label>
+                        <span id="stockMarketCap">-</span>
+                    </div>
+                    <div class="metric">
+                        <label>ISIN</label>
+                        <span id="stockSector">-</span>
+                    </div>
+                </div>
+
+                <!-- Graphique historique du prix -->
+                <div class="stock-history-chart-container" style="margin: 32px 0; position: relative;">
+                    <button id="fullscreenChartBtn" title="Agrandir le graphique" style="position: absolute; top: 8px; right: 48px; z-index: 10; background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px; cursor: pointer;">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <button id="downloadChartBtn" title="Télécharger le graphique" style="position: absolute; top: 8px; right: 8px; z-index: 10; background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px; cursor: pointer;">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <canvas id="stockHistoryChart" height="180"></canvas>
+                </div>
+
+
+                <!-- Action Buttons -->
+                <div class="stock-actions">
+                    <button class="btn btn-outline" id="compareBtn">
+                        <i class="fas fa-balance-scale"></i>
+                        Comparer
+                    </button>
+                </div>
+
+                <!-- Carnet d'ordre et Depth Chart -->
+                <div class="order-book-section" style="margin-top:32px; display: flex; gap: 32px; align-items: flex-start;">
+                    <div style="flex:1; min-width:320px;">
+                        <h3>Carnet d'ordre</h3>
+                        <div id="orderBookTable" class="order-book-container"></div>
+                    </div>
+                    <div style="flex:1; min-width:320px;">
+                        <h3>Graphique de Profondeur</h3>
+                        <div style="display:flex; align-items:center; gap:16px; margin-bottom:8px;">
+                            <span style="font-weight:600; color:#334155;">Midmarket price :</span>
+                            <span id="midmarketPrice" style="font-size:1.2em; color:#0e7490; font-weight:bold;">-</span>
+                        </div>
+                        <canvas id="orderBookDepthChart" height="220"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Graphiques Section -->
+    <section id="graphiques" class="section">
+        <div class="container">
+            <div class="section-header">
+            </div>
+
+            <!-- Contrôles pour les graphiques -->
+            <div class="chart-controls" style="display: flex; align-items: flex-end; gap: 16px;">
+                <div class="control-group">
+                    <label for="chart-type">Type de graphique:</label>
+                    <select id="chart-type" class="form-control">
+                        <option value="area">Zone</option>
+                        <option value="candlestick">Chandelier</option>
+                        <option value="line">Ligne</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="chart-period">Période:</label>
+                    <select id="chart-period" class="form-control">
+                        <option value="1D">1 Jour</option>
+                        <option value="1W">1 Semaine</option>
+                        <option value="1M">1 Mois</option>
+                        <option value="3M" selected>3 Mois</option>
+                        <option value="6M">6 Mois</option>
+                        <option value="1Y">1 An</option>
+                        <option value="3Y">3 Ans</option>
+                        <option value="YTD">Année en cours</option>
+                        <option value="MAX">Max</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="chart-symbol">Instrument:</label>
+                    <select id="chart-symbol" class="form-control">
+                        <option value="TUNINDEX">TUNINDEX</option>
+                        <option value="TUNINDEX20">TUNINDEX20</option>
+                        <!-- Les autres instruments seront chargés dynamiquement -->
+                    </select>
+                </div>
+                <button id="apply-chart-settings" class="btn btn-primary">
+                    <i class="fas fa-check"></i> Appliquer
+                </button>
+                <div style="flex:1;"></div>
+                <button id="draw-line-btn" class="btn btn-secondary draw-line-icon-btn" title="Outils de dessin" type="button" style="position:relative;">
+                    <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="4" cy="16" r="3" fill="#888"/>
+                        <circle cx="24" cy="4" r="3" fill="#888"/>
+                        <line x1="6.5" y1="14" x2="21.5" y2="6" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <div id="draw-line-dropdown" class="draw-line-dropdown" style="display:none; position:absolute; top:100%; right:0; min-width:180px; z-index:30;">
+                    <button class="dropdown-item" id="draw-line-action" type="button">
+                        <svg width="22" height="16" viewBox="0 0 28 20" fill="none" style="vertical-align:middle; margin-right:8px;">
+                            <circle cx="4" cy="16" r="3" fill="#888"/>
+                            <circle cx="24" cy="4" r="3" fill="#888"/>
+                            <line x1="6.5" y1="14" x2="21.5" y2="6" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        droite
+                    </button>
+                </div>
+            </div>
+
+            <!-- Conteneur principal pour le graphique -->
+            <div class="main-chart-container">
+                <canvas id="mainChart"></canvas>
+            </div>
+
+            <!-- Mini-toolbar flottant pour la ligne sélectionnée -->
+            <div id="line-toolbar" style="display:none; position:absolute; z-index:20; background:#fff; border:1px solid #ccc; border-radius:6px; box-shadow:0 2px 8px #0002; padding:6px 10px; gap:8px; align-items:center; min-width:110px;">
+                <input type="color" id="toolbar-line-color" style="width:28px; height:28px; border:none; background:none; cursor:pointer; margin-right:6px;">
+                <div id="toolbar-line-width-group" style="display:flex; gap:4px; align-items:center; margin-right:6px;">
+                    <button class="toolbar-line-width-btn" data-width="1" title="Très fin" style="background:none; border:none; cursor:pointer; padding:0;">
+                        <svg width="32" height="20"><line x1="4" y1="10" x2="28" y2="10" stroke="#444" stroke-width="1" stroke-linecap="round"/></svg>
+                    </button>
+                    <button class="toolbar-line-width-btn" data-width="2" title="Fin" style="background:none; border:none; cursor:pointer; padding:0;">
+                        <svg width="32" height="20"><line x1="4" y1="10" x2="28" y2="10" stroke="#444" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+                    <button class="toolbar-line-width-btn" data-width="3" title="Moyen" style="background:none; border:none; cursor:pointer; padding:0;">
+                        <svg width="32" height="20"><line x1="4" y1="10" x2="28" y2="10" stroke="#444" stroke-width="3" stroke-linecap="round"/></svg>
+                    </button>
+                    <button class="toolbar-line-width-btn" data-width="4" title="Épais" style="background:none; border:none; cursor:pointer; padding:0;">
+                        <svg width="32" height="20"><line x1="4" y1="10" x2="28" y2="10" stroke="#444" stroke-width="4" stroke-linecap="round"/></svg>
+                    </button>
+                </div>
+                <button id="toolbar-delete" title="Supprimer la ligne" style="background:none; border:none; cursor:pointer; margin-left:8px; color:#888; font-size:18px;"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Watch Section -->
+    <section id="marketwatch" class="section">
+        <div class="container">
+            <div class="section-header">
+                <!-- Suppression du titre et du sous-titre Market Watch -->
+            </div>
+            <div class="table-container full-width">
+                <div class="table-header">
+                    <h3><i class="fas fa-list text-blue"></i> Toutes les Actions</h3>
+                </div>
+                <div class="table-content">
+                    <table id="marketWatchTable">
+                        <thead>
+                        <tr>
+                            <th>Ticker</th>
+                            <th>Nom</th>
+                            <th>Prix</th>
+                            <th>Variation</th>
+                            <th>Volume</th>
+                            <th>ISIN</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Charts Section -->
+    <section id="dataCharts" class="section">
+        <div class="container">
+            <!-- Dropdown de recherche en haut avec conteneur optimisé -->
+            <div style="max-width: 300px; margin-bottom: 20px;">
+                <div class="search-box" style="display: flex; align-items: center;">
+                    <i class="fas fa-search" style="margin-right: 8px;"></i>
+                    <select id="dataChartsSymbol" style="flex: 1; min-width: 0;">
+                        <option value="">Sélectionner une action...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="dataChartsContainer" class="chart-container">
+                <div class="chart-controls" style="display: flex; align-items: center; gap: 16px; justify-content: space-between;">
+                    <div class="control-group" style="display: flex !important; flex-direction: row !important; align-items: center !important; gap: 8px !important;">
+                        <select id="dataChartsPeriod" class="form-control" style="display: inline-block !important; margin: 0 !important; min-width: 120px;">
+                            <option value="1M">1 Mois</option>
+                            <option value="3M" selected>3 Mois</option>
+                            <option value="6M">6 Mois</option>
+                            <option value="1Y">1 An</option>
+                            <option value="3Y">3 Ans</option>
+                            <option value="5Y">5 Ans</option>
+                            <option value="MAX">Max</option>
+                        </select>
+                        <select id="dataChartsGranularity" class="form-control" style="display: inline-block !important; margin: 0 !important; min-width: 120px;">
+                            <option value="1D" selected>Quotidien</option>
+                            <option value="1W">Hebdomadaire</option>
+                            <option value="1M">Mensuel</option>
+                            <option value="3M">Trimestriel</option>
+                            <option value="1Y">Annuel</option>
+                        </select>
+                    </div>
+                    <div class="chart-type-controls" style="display: flex; align-items: center; gap: 8px;">
+                        <button id="lineChartBtn" class="chart-type-btn active" title="Graphique en ligne" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px; cursor: pointer;">
+                            <i class="fas fa-chart-line"></i>
+                        </button>
+                        <button id="candleChartBtn" class="chart-type-btn" title="Graphique en chandeliers" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px; cursor: pointer;">
+                            <i class="fas fa-chart-bar"></i>
+                        </button>
+                        <!-- Boutons indicateurs -->
+                        <button id="macdChartBtn" class="indicator-btn" title="MACD" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px 8px; cursor: pointer; font-size: 12px;">
+                            MACD
+                        </button>
+                        <button id="rsiChartBtn" class="indicator-btn" title="RSI" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px 8px; cursor: pointer; font-size: 12px;">
+                            RSI
+                        </button>
+                        <button id="bollingerChartBtn" class="indicator-btn" title="Bandes de Bollinger" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px 8px; cursor: pointer; font-size: 12px;">
+                            BB
+                        </button>
+                        <!-- AJOUT: Nouveaux boutons indicateurs -->
+                        <button id="ichimokuChartBtn" class="indicator-btn" title="Ichimoku Cloud" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px 8px; cursor: pointer; font-size: 12px;">
+                            Ichimoku
+                        </button>
+                        <button id="stochasticChartBtn" class="indicator-btn" title="Stochastic Oscillator" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px 8px; cursor: pointer; font-size: 12px;">
+                            Stoch
+                        </button>
+                        <button id="williamsRChartBtn" class="indicator-btn" title="Williams %R" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px 8px; cursor: pointer; font-size: 12px;">
+                            Williams %R
+                        </button>
+
+                        <!-- Bouton dessin -->
+                        <button id="drawLineBtn" class="chart-type-btn" title="Tracer une ligne" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px; cursor: pointer;">
+                            <svg width="22" height="22" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="4" cy="16" r="3" fill="#888"/>
+                                <circle cx="24" cy="4" r="3" fill="#888"/>
+                                <line x1="6.5" y1="14" x2="21.5" y2="6" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                        <button id="downloadDataChartBtn" title="Télécharger le graphique" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px; cursor: pointer;">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button id="fullscreenDataChartBtn" title="Agrandir le graphique" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px; cursor: pointer;">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="dataChartsArea" style="height: 450px; margin-top: 20px;">
+                    <!-- Le graphique principal sera inséré ici -->
+                </div>
+                <!-- Graphique de volume -->
+                <div id="volumeChartsArea" style="height: 200px; margin-top: 10px; display: none;">
+                    <!-- Le graphique de volume sera inséré ici -->
+                </div>
+                <!-- Graphiques indicateurs MACD et RSI -->
+                <div id="macdChartsArea" style="height: 150px; margin-top: 10px; display: none;">
+                    <!-- Le graphique MACD sera inséré ici -->
+                </div>
+                <div id="rsiChartsArea" style="height: 150px; margin-top: 10px; display: none;">
+                    <!-- Le graphique RSI sera inséré ici -->
+                </div>
+                <!-- AJOUT: Graphiques pour les nouveaux indicateurs -->
+                <div id="stochasticChartsArea" style="height: 150px; margin-top: 10px; display: none;">
+                    <!-- Le graphique Stochastic sera inséré ici -->
+                </div>
+                <div id="williamsRChartsArea" style="height: 150px; margin-top: 10px; display: none;">
+                    <!-- Le graphique Williams %R sera inséré ici -->
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="loading-spinner">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Chargement...</p>
+    </div>
+</div>
+
+<!-- Toast Notifications -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- Scripts -->
+<script src="js/api.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/indices.js"></script>
+<script src="js/index-charts.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/stocks.js"></script>
+<script src="js/graphiques.js"></script>
+<script src="js/dataCharts.js"></script>
+<script src="js/app.js"></script>
+<script src="js/indicators.js"></script>
+<script>
+    // Gestion du dropdown pour le bouton segment
+    const drawLineBtn = document.getElementById('draw-line-btn');
+    const drawLineDropdown = document.getElementById('draw-line-dropdown');
+    drawLineBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isOpen = drawLineDropdown.style.display === 'block';
+        drawLineDropdown.style.display = isOpen ? 'none' : 'block';
+    });
+    document.addEventListener('click', function(e) {
+        if (!drawLineBtn.contains(e.target)) {
+            drawLineDropdown.style.display = 'none';
+        }
+    });
+
+    // Gestion du dropdown pour le bouton segment dans dataCharts
+    const drawLineDataChartBtn = document.getElementById('drawLineDataChartBtn');
+    const drawLineDataChartDropdown = document.getElementById('drawLineDataChartDropdown');
+    if (drawLineDataChartBtn && drawLineDataChartDropdown) {
+        drawLineDataChartBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpen = drawLineDataChartDropdown.style.display === 'block';
+            drawLineDataChartDropdown.style.display = isOpen ? 'none' : 'block';
+        });
+        document.addEventListener('click', function(e) {
+            if (!drawLineDataChartBtn.contains(e.target)) {
+                drawLineDataChartDropdown.style.display = 'none';
+            }
+        });
+    }
+</script>
+</body>
+</html>

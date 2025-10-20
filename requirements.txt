@@ -1,0 +1,14 @@
+flask
+pymongo
+python-dotenv
+requests
+flask-cors
+transformers
+torch
+gunicorn
+python-dateutil
+flask-socketio
+websocket-client
+pandas
+numpy
+certifi

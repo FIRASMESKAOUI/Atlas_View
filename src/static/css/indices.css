@@ -1,0 +1,109 @@
+/* Market Indices Styles */
+.market-indices {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.index-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.index-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.index-card .card-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333333;
+}
+
+.index-card .time-stamp {
+    font-size: 0.8rem;
+    color: #666666;
+}
+
+.index-card .index-value {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.index-card .index-value span:first-child {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333333;
+}
+
+.index-card .change {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.index-card .change.positive,
+.index-card .change.text-green {
+    color: #28a745;
+}
+
+.index-card .change.negative,
+.index-card .change.text-red {
+    color: #dc3545;
+}
+
+.index-card .index-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.index-card .index-details div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.index-card .index-details .label {
+    font-size: 0.8rem;
+    color: #666666;
+}
+
+.index-card .index-details span:not(.label) {
+    font-size: 0.9rem;
+    color: #333333;
+}
+
+/* Styles pour les graphiques des indices */
+.chart-container {
+    height: 150px;
+    width: 100%;
+    margin-top: 1rem;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+/* Animation pour les mises à jour */
+@keyframes highlight {
+    0% { background-color: rgba(255, 255, 0, 0.2); }
+    100% { background-color: transparent; }
+}
+
+.index-card.updated {
+    animation: highlight 1s ease-in-out;
+}
+
+/* Media queries pour responsive */
+@media (max-width: 768px) {
+    .market-indices {
+        grid-template-columns: 1fr;
+    }
+}
+
