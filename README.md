@@ -190,8 +190,7 @@ AI_MODELS = {
 
 ### Cache et Performance
 ```python
-# Configuration du cache Redis (optionnel)
-REDIS_URL = 'redis://localhost:6379/0'
+# Configuration du cache (optionnel)
 CACHE_TIMEOUT = 300  # 5 minutes
 ```
 
@@ -220,9 +219,6 @@ pytest --cov=src tests/
 ```bash
 # Tester les APIs
 python tests/test_api_integration.py
-
-# Tester la base de données
-python tests/test_database.py
 ```
 
 ## 📊 Monitoring et Logs
@@ -239,7 +235,6 @@ grep "ERROR" logs/Atlas_View.log
 ### Métriques de performance
 - Temps de réponse API
 - Utilisation mémoire des modèles IA
-- Statistiques d'utilisation MongoDB
 
 ## 🔒 Sécurité
 
@@ -264,19 +259,19 @@ SECURITY_HEADERS = True
 
 ## 🚀 Déploiement
 
-### Heroku
-```bash
-# Installer Heroku CLI
-heroku create Atlas_View-app
-git push heroku main
-```
+### Docker Desktop
 
-### VPS/Serveur dédié
-```bash
-# Nginx + Gunicorn
-sudo apt install nginx
-# Configuration Nginx fournie dans /deploy/nginx.conf
-```
+1. Ouvre Docker Desktop et vérifie que le service est lancé.
+2. Place-toi dans le dossier du projet contenant docker-compose.yml.
+3. Lance la commande suivante :
+   ```powershell
+   docker compose up --build -d
+   ```
+4. L'application sera accessible sur http://localhost:5000
+5. Pour arrêter :
+   ```powershell
+   docker compose down
+   ```
 
 ## 🤝 Contribution
 
@@ -290,7 +285,7 @@ warren-ai/
 │   └── static/              # Frontend (HTML/CSS/JS)
 ├── tests/                   # Tests unitaires
 ├── docs/                    # Documentation
-├── deploy/                  # Scripts de déploiement
+├── scripts/                 # Scripts de déploiement
 └── requirements.txt         # Dépendances Python
 ```
 
@@ -298,33 +293,3 @@ warren-ai/
 1. **Code style** : PEP 8 pour Python, ESLint pour JavaScript
 2. **Tests** : Couverture minimale de 80%
 3. **Documentation** : Docstrings pour toutes les fonctions
-4. **Git** : Commits atomiques avec messages descriptifs
-
-## 📈 Roadmap
-
-### Version 1.1
-- [ ] Alertes en temps réel
-- [ ] Export PDF des analyses
-- [ ] API GraphQL
-- [ ] Mode sombre
-
-### Version 1.2
-- [ ] Machine Learning prédictif
-- [ ] Intégration Slack/Discord
-- [ ] Application mobile
-- [ ] Analyse technique avancée
-
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
-
-## 🙏 Remerciements
-
-- **BVMT** pour l'accès aux données financières
-- **HuggingFace** pour les modèles IA pré-entraînés
-- **Flask** pour le framework web
-- **Chart.js** pour les visualisations
-
----
-
-**Atlas_View** - Analyse financière intelligente pour la BVMT 🚀📊🤖

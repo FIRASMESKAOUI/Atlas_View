@@ -1,78 +1,27 @@
-version: '3.8'
-
 services:
-  # Application Atlas Capital
-  Atlas-Capital:
+  atlas-view:
     build: .
-    container_name: Atlas-Capital-app
+    image: atlas-view-atlas-view:latest
+    container_name: atlas-view-atlas-view-app
     ports:
       - "5000:5000"
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/Atlas-Capital
       - SECRET_KEY=your-secret-key-change-in-production
       - FLASK_ENV=production
-      - DEBUG=False
       - BVMT_BASE_URL=https://www.bvmt.com.tn/rest_api/rest
     volumes:
       - ./logs:/app/logs
       - ./models_cache:/app/models_cache
-    depends_on:
-      - mongodb
     restart: unless-stopped
     networks:
-      - Atlas-Capital-network
-
-  # Base de données MongoDB
-  mongodb:
-    image: mongo:7.0
-    container_name: Atlas-Capital-mongodb
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_DATABASE=warren_ai
-    volumes:
-      - mongodb_data:/data/db
-      - ./backups:/backups
-    restart: unless-stopped
-    networks:
-      - Atlas-Capital-network
-
-  # Redis pour le cache (optionnel)
-  redis:
-    image: redis:7-alpine
-    container_name: Atlas-Capital-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    restart: unless-stopped
-    networks:
-      - Atlas-Capital-network
-    command: redis-server --appendonly yes
-
-  # Nginx reverse proxy
-  nginx:
-    image: nginx:alpine
-    container_name: Atlas-Capital-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./src/static:/usr/share/nginx/html/static:ro
-      - ./ssl:/etc/nginx/ssl:ro
-    depends_on:
-      - Atlas-Capital
-    restart: unless-stopped
-    networks:
-      - Atlas-Capital-network
+      - atlas_view-network
 
 volumes:
-  mongodb_data:
+  logs:
     driver: local
-  redis_data:
+  models_cache:
     driver: local
 
 networks:
-  Atlas-Capital-network:
+  atlas_view-network:
     driver: bridge
