@@ -99,7 +99,10 @@ class Dashboard {
             animateValue(elements.unchangedCount, 0, stats.unchanged || 0);
         }
         if (elements.totalStocks) {
-            animateValue(elements.totalStocks, 0, stats.total_stocks || 0);
+            // Afficher le ratio qtys/groups pour les valeurs actives avec des espaces
+            const qtys = stats.active_stocks_qtys || 0;
+            const groups = stats.active_stocks_groups || 0;
+            elements.totalStocks.textContent = `${qtys} / ${groups}`;
         }
     }
 

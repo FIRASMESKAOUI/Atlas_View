@@ -57,20 +57,51 @@ class DataService:
         """
         try:
             all_stocks = self.get_all_stocks()
+
+            # Récupérer les données de market/qtys pour le ratio ET pour calculer les inchangées
+            qtys_data = self.bvmt_service.get_market_qtys_only()
+            qtys_count = 0
+            if qtys_data and 'markets' in qtys_data:
+                qtys_count = len(qtys_data['markets'])
+
+            # Récupérer les données de market/groups pour le ratio
+            groups_data = self.bvmt_service.get_market_groups()
+            groups_count = 0
+            if groups_data and 'markets' in groups_data:
+                groups_count = len(groups_data['markets'])
+
+            # Récupérer les hausses depuis l'API
+            rises_data = self.bvmt_service.get_market_rises()
+            gainers_count = 0
+            if rises_data and 'markets' in rises_data:
+                gainers_count = len(rises_data['markets'])
+
+            # Récupérer les baisses depuis l'API
+            falls_data = self.bvmt_service.get_market_falls()
+            losers_count = 0
+            if falls_data and 'markets' in falls_data:
+                losers_count = len(falls_data['markets'])
+
+            # Calculer les inchangées par rapport à market/qtys
+            unchanged_count = qtys_count - (gainers_count + losers_count)
+
+            # Total stocks depuis groups
+            total_stocks = len(all_stocks)
+
+            # Top 10 pour l'affichage
             top_gainers = sorted([s for s in all_stocks if s.get('change', 0) > 0], key=lambda x: x.get('change', 0), reverse=True)[:10]
             top_losers = sorted([s for s in all_stocks if s.get('change', 0) < 0], key=lambda x: x.get('change', 0))[:10]
             most_active = sorted([s for s in all_stocks if s.get('volume', 0) > 0], key=lambda x: x.get('volume', 0), reverse=True)[:10]
-            total_stocks = len(all_stocks)
-            gainers_count = len(top_gainers)
-            losers_count = len(top_losers)
-            unchanged_count = total_stocks - (gainers_count + losers_count)
+
             return {
                 'timestamp': datetime.utcnow(),
                 'statistics': {
                     'total_stocks': total_stocks,
                     'gainers': gainers_count,
                     'losers': losers_count,
-                    'unchanged': unchanged_count
+                    'unchanged': unchanged_count,
+                    'active_stocks_qtys': qtys_count,
+                    'active_stocks_groups': groups_count
                 },
                 'top_gainers': top_gainers,
                 'top_losers': top_losers,

@@ -81,21 +81,34 @@ def get_chart_history(symbol):
 
         logger.info(f"Récupération des données historiques pour {symbol} -> {stock_name}")
 
+        # CORRECTION: Utiliser des timestamps dynamiques au lieu de valeurs fixes
+        import time
+        from datetime import datetime, timedelta
+
+        # Date de fin: aujourd'hui
+        to_timestamp = int(time.time())
+
+        # Date de début: 5 ans en arrière pour avoir un historique complet
+        from_date = datetime.now() - timedelta(days=5*365)
+        from_timestamp = int(from_date.timestamp())
+
         # Utiliser le stockName dans l'URL de l'API history
         history_url = f'https://data.irbe7.com/api/data/history'
         params = {
             'symbol': stock_name,
             'resolution': '1D',
-            'from': '1758664646',
-            'to': '1759528646',
+            'from': str(from_timestamp),
+            'to': str(to_timestamp),
             'countback': '2'
         }
+
+        logger.info(f"Requête historique pour {stock_name} de {from_date.strftime('%Y-%m-%d')} à aujourd'hui")
 
         history_response = requests.get(history_url, params=params, timeout=30)
 
         if history_response.ok:
             history_data = history_response.json()
-            logger.info(f"Données historiques reçues pour {stock_name}: {history_data}")
+            logger.info(f"Données historiques reçues pour {stock_name}: {len(history_data.get('t', []))} points")
 
             # Vérifier que les données sont valides
             if history_data.get('s') == 'ok' and history_data.get('t') and history_data.get('c'):

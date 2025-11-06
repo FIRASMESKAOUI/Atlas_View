@@ -57,10 +57,16 @@ class BVMTService:
     
     def get_market_quantities(self) -> Optional[Dict]:
         """
-        Récupère les quantités du marché
+        Récupère les quantités du marché depuis l'endpoint groups
+        """
+        return self.get_market_groups()
+
+    def get_market_qtys_only(self) -> Optional[Dict]:
+        """
+        Récupère uniquement les données de market/qtys (sans groups)
         """
         return self._make_request('market/qtys')
-    
+
     def get_market_rises(self) -> Optional[Dict]:
         """
         Récupère les hausses du marché
@@ -83,8 +89,11 @@ class BVMTService:
         """
         Récupère les données par groupes de marché
         """
-        return self._make_request(f'market/groups/{groups}')
-    
+        data = self._make_request(f'market/groups/{groups}')
+        if data and 'markets' in data:
+            return data
+        return data
+
     def get_stock_history(self, isin: str) -> Optional[Dict]:
         """
         Récupère l'historique d'une action par ISIN
@@ -299,14 +308,17 @@ class BVMTService:
 
             return indices_data
 
-        # En cas d'échec, essayer de récupérer depuis la base de données
-        db_indices = self.get_indices_from_db()
-        if db_indices:
-            logger.debug("Récupération des indices depuis MongoDB")
-            return db_indices
+        # En cas d'échec, retourner le cache s'il existe
+        if self._indices_cache:
+            logger.debug("Récupération des indices depuis le cache (fallback)")
+            return self._indices_cache
 
-        # Si toujours pas de données, renvoyer le cache s'il existe
-        return self._indices_cache
+        # Si toujours pas de données, retourner un dictionnaire vide
+        logger.warning("Impossible de récupérer les indices")
+        return {
+            'indices': [],
+            'timestamp': datetime.utcnow().isoformat()
+        }
 
     def get_index_history(self, isin: str) -> Optional[Dict]:
         """
@@ -326,4 +338,3 @@ class BVMTService:
         """
         endpoint = f"limits/{isin}"
         return self._make_request(endpoint)
-
