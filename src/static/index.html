@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/indices.css">
     <link rel="stylesheet" href="css/graphiques.css">
+    <link rel="stylesheet" href="css/ai-analysis.css">
+    <link rel="stylesheet" href="css/stock-ticker.css">
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -36,6 +38,8 @@
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <!-- Pour le téléchargement -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+
 
 
     <style>
@@ -220,9 +224,9 @@
             <nav class="nav">
                 <a href="#dashboard" class="nav-link active">Tableau de Bord</a>
                 <a href="#stocks" class="nav-link">Actions</a>
-<!--                <a href="#graphiques" class="nav-link">Graphiques</a>-->
                 <a href="#marketwatch" class="nav-link">Market Watch</a>
                 <a href="#dataCharts" class="nav-link">Graphiques</a>
+                <a href="#aiAnalysis" class="nav-link">Analyse & Prédiction IA</a>
             </nav>
             <div class="header-actions">
                 <button class="btn btn-outline" id="refreshBtn">
@@ -233,7 +237,14 @@
         </div>
     </div>
 </header>
-
+<!-- Bandeau Boursier Défilant -->
+<div class="stock-ticker-container">
+    <div class="stock-ticker" id="stockTickerContainer">
+        <div class="ticker-content" id="tickerContent">
+            <!-- Les actions seront chargées dynamiquement -->
+        </div>
+    </div>
+</div>
 <!-- Main Content -->
 <main class="main">
     <!-- Dashboard Section -->
@@ -668,6 +679,93 @@
                 <div id="williamsRChartsArea" style="height: 150px; margin-top: 10px; display: none;">
                     <!-- Le graphique Williams %R sera inséré ici -->
                 </div>
+                <!-- Section Dividendes -->
+                <div id="dividendesSection" style="display: none; margin-top: 30px; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0; color: #333; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-coins" style="color: #FFD700;"></i>
+                            Historique des Dividendes
+                        </h3>
+                        <div style="display: flex; gap: 8px;">
+                            <button id="downloadDividendsBtn" title="Télécharger les dividendes en CSV" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px; cursor: pointer;">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button id="fullscreenDividendsBtn" title="Agrandir la section" style="background: rgba(255,255,255,0.8); border: none; border-radius: 4px; padding: 6px; cursor: pointer;">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Informations générales -->
+                    <div id="dividendesInfo" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                        <!-- Info dynamique injectée ici -->
+                    </div>
+
+                    <!-- Timeline visuelle -->
+                    <div id="dividendesTimeline" style="margin-bottom: 30px;">
+                        <h4 style="color: #666; font-size: 14px; margin-bottom: 15px;">Timeline de distribution</h4>
+                        <div id="timelineContainer" style="position: relative; height: 80px; background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%); border-radius: 8px; padding: 20px;">
+                            <!-- Timeline dynamique injectée ici -->
+                        </div>
+                    </div>
+
+                    <!-- Tableau des dividendes -->
+                    <div style="overflow-x: auto;">
+                        <table id="dividendesTable" style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                            <thead>
+                                <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                                    <th style="padding: 12px; text-align: left; font-weight: 600; color: #495057;">Année</th>
+                                    <th style="padding: 12px; text-align: right; font-weight: 600; color: #495057;">Montant (TND)</th>
+                                    <th style="padding: 12px; text-align: center; font-weight: 600; color: #495057;">Date de paiement</th>
+                                    <th style="padding: 12px; text-align: right; font-weight: 600; color: #495057;">Variation</th>
+                                    <th style="padding: 12px; text-align: right; font-weight: 600; color: #495057;">Rendement*</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dividendesTableBody">
+                                <!-- Données dynamiques injectées ici -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p style="margin-top: 15px; font-size: 12px; color: #6c757d; font-style: italic;">
+                        * Rendement calculé par rapport au nominal de l'action
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Analysis Section -->
+    <section id="aiAnalysis" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-brain"></i> Analyse & Prédiction IA</h2>
+                <p>Analyse technique automatisée avec intelligence artificielle</p>
+            </div>
+
+            <!-- Sélection de l'action -->
+            <div class="ai-search-container">
+                <label for="aiAnalysisSymbol">
+                    <i class="fas fa-chart-line"></i> Sélectionner une action :
+                </label>
+                <select id="aiAnalysisSymbol">
+                    <option value="">Sélectionner une action...</option>
+                </select>
+                <button id="analyzeAIBtn" class="btn btn-primary">
+                    <i class="fas fa-brain"></i>
+                    Analyser avec IA
+                </button>
+            </div>
+
+            <!-- Loader -->
+            <div id="aiAnalysisLoader">
+                <div class="spinner"></div>
+                <p>Analyse en cours... Veuillez patienter.</p>
+            </div>
+
+            <!-- Résultats de l'analyse -->
+            <div id="aiAnalysisResults" style="display: none;">
+                <!-- Les résultats seront injectés ici par JavaScript -->
             </div>
         </div>
     </section>
@@ -693,8 +791,12 @@
 <script src="js/stocks.js"></script>
 <script src="js/graphiques.js"></script>
 <script src="js/dataCharts.js"></script>
+<script src="js/ai-analysis.js"></script>
 <script src="js/app.js"></script>
 <script src="js/indicators.js"></script>
+<script src="js/stock-ticker.js"></script>
+
+
 <script>
     // Gestion du dropdown pour le bouton segment
     const drawLineBtn = document.getElementById('draw-line-btn');
@@ -728,3 +830,4 @@
 </script>
 </body>
 </html>
+
