@@ -12,3 +12,7 @@ websocket-client
 pandas
 numpy
 certifi
+scikit-learn
+scipy
+Pillow>=9.0.0
+openai>=1.0.0
