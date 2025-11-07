@@ -3418,9 +3418,14 @@ class DataCharts {
                 rsi.push(100 - (100 / (1 + rs)));
             }
 
-            // Mettre à jour les moyennes
-            avgGain = ((avgGain * (period - 1)) + gains[i]) / period;
-            avgLoss = ((avgLoss * (period - 1)) + losses[i]) / period;
+            // Mettre à jour les moyennes (FIX: utiliser gainsIndex car gains/losses ont un décalage)
+            // gains[0] = différence entre prices[1] et prices[0]
+            // donc pour prices[i], utiliser gains[i-1]
+            const gainsIndex = i - 1;
+            if (gainsIndex >= 0 && gainsIndex < gains.length) {
+                avgGain = ((avgGain * (period - 1)) + gains[gainsIndex]) / period;
+                avgLoss = ((avgLoss * (period - 1)) + losses[gainsIndex]) / period;
+            }
         }
 
         return rsi;
