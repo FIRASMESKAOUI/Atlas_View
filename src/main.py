@@ -10,6 +10,9 @@ from dotenv import load_dotenv
 from .routes.stocks import stocks_bp
 from .routes.indices import indices_bp
 from .routes.dataCharts import dataCharts_bp
+from .routes.ai_analysis import ai_analysis_bp
+
+
 import requests
 
 # Charger les variables d'environnement
@@ -28,6 +31,9 @@ CORS(app)
 app.register_blueprint(stocks_bp, url_prefix='/api/stocks')
 app.register_blueprint(indices_bp, url_prefix='/api/indices')
 app.register_blueprint(dataCharts_bp, url_prefix='/api/dataCharts')
+app.register_blueprint(ai_analysis_bp, url_prefix='/api/ai-analysis')
+
+
 
 @app.after_request
 def after_request(response):
